@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    btnIniciar.addEventListener('click', () => enviarComando('iniciar', 'Robô Rodando... ▶️'));
+    btnIniciar.addEventListener('click', () => enviarComando('iniciar', '🤖 Robô + Agentes Rodando... ▶️'));
     btnPausar.addEventListener('click', () => enviarComando('pausar', 'Robô Pausado ⏸️'));
     btnParar.addEventListener('click', () => enviarComando('parar', 'Robô Parado ⏹️'));
 });

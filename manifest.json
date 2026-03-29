@@ -6,7 +6,7 @@
   "host_permissions": ["https://app.duleads.com.br/*"],
   "content_scripts": [{
     "matches": ["https://app.duleads.com.br/*"],
-    "js": ["content.js"],
+    "js": ["agents.js", "content.js"],
     "run_at": "document_end"
   }]
 }
