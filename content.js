@@ -237,9 +237,18 @@
                 Logger.human('Assumindo os controles... Agentes ativados!');
                 AI.atualizarIndicador(true); atualizarEstadoVisual();
                 Watchdog.iniciar(async (passo, tempoInativo) => {
-                    Logger.warn(`Watchdog: Travamento detectado em "${passo}" (${tempoInativo}s). Tentando recuperar...`);
+                    Logger.warn(`Watchdog: Travamento detectado em "${passo}" (${tempoInativo}s). Procurando botão de cancelar e fechando...`);
+                    await Recovery.tentarCancelarEFechar();
+                    await new Promise(r => setTimeout(r, 1000));
                     const recuperou = await Recovery.tentarRecuperar();
-                    if (!recuperou) Logger.error('Watchdog: Recuperação falhou. Considere reiniciar o fluxo.');
+                    if (!recuperou) {
+                        Logger.warn('Watchdog: Encerrando fluxo travado para reiniciar limpo...');
+                        estadoRobo = 'PARADO';
+                        let espera = 0;
+                        while (loopRodando && espera < 5000) { await new Promise(r => setTimeout(r, 200)); espera += 200; }
+                        estadoRobo = 'RODANDO';
+                        if (!loopRodando) loopPrincipal();
+                    }
                 });
                 loopPrincipal();
             }
@@ -772,8 +781,18 @@
                 AI.atualizarIndicador(true);
                 atualizarEstadoVisual();
                 Watchdog.iniciar(async (passo, tempoInativo) => {
-                    Logger.warn(`Watchdog: Travamento em "${passo}" (${tempoInativo}s). Tentando recuperar...`);
-                    await Recovery.tentarRecuperar();
+                    Logger.warn(`Watchdog: Travamento em "${passo}" (${tempoInativo}s). Procurando botão de cancelar e fechando...`);
+                    await Recovery.tentarCancelarEFechar();
+                    await new Promise(r => setTimeout(r, 1000));
+                    const recuperou = await Recovery.tentarRecuperar();
+                    if (!recuperou) {
+                        Logger.warn('Watchdog: Encerrando fluxo travado para reiniciar limpo...');
+                        estadoRobo = 'PARADO';
+                        let espera = 0;
+                        while (loopRodando && espera < 5000) { await new Promise(r => setTimeout(r, 200)); espera += 200; }
+                        estadoRobo = 'RODANDO';
+                        if (!loopRodando) loopPrincipal();
+                    }
                 });
                 loopPrincipal();
             }
