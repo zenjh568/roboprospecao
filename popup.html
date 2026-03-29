@@ -20,6 +20,14 @@
     .btn-parar { background: #cc0000; box-shadow: 0 4px 10px rgba(204,0,0,0.4); }
     .btn-parar:hover { background: #ff0000; }
     
+    .btn-toggle { display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 13px; }
+    .btn-toggle-on  { background: #006400; box-shadow: 0 4px 10px rgba(0,180,0,0.5); }
+    .btn-toggle-on:hover  { background: #009900; }
+    .btn-toggle-off { background: #444; box-shadow: 0 4px 10px rgba(100,100,100,0.3); }
+    .btn-toggle-off:hover { background: #555; }
+    .led { width: 14px; height: 14px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+    .led-green { background: #00ff44; box-shadow: 0 0 8px #00ff44; }
+    .led-gray  { background: #666; box-shadow: none; }
     .status { font-size: 11px; text-align: center; margin-top: 10px; color: #00ffcc; font-weight: bold; padding: 8px; background: #111; border-radius: 5px; border: 1px solid #333; }
     .agent-info { font-size: 9px; text-align: center; margin-top: 6px; color: #e0b0ff; padding: 6px; background: #111; border-radius: 5px; border: 1px solid #4b0082; }
   </style>
@@ -27,6 +35,11 @@
 <body>
   <div class="header"><h2>PROSPECÇÃO MARATONA 🤖</h2></div>
   
+  <button id="btnToggle" class="btn btn-toggle btn-toggle-off">
+    <span class="led led-gray" id="ledIndicator"></span>
+    <span id="toggleLabel">LIGAR ROBÔ</span>
+  </button>
+
   <button id="btnIniciar" class="btn btn-iniciar">▶️ INICIAR / CONTINUAR</button>
   
   <div class="btn-row">

@@ -736,4 +736,45 @@
         Logger.agent('Loop principal finalizado.');
         Stats.renderizar();
     }
+
+    chrome.runtime.onMessage.addListener((msg) => {
+        function iniciarRobo(origem) {
+            garantirPainel();
+            if (estadoRobo !== 'RODANDO') {
+                estadoRobo = 'RODANDO';
+                Stats.iniciar();
+                Logger.limpar();
+                Logger.agent(`Sistema iniciado via ${origem}`);
+                AI.atualizarIndicador(true);
+                Watchdog.iniciar(async (passo, tempoInativo) => {
+                    Logger.warn(`Watchdog: Travamento em "${passo}" (${tempoInativo}s). Tentando recuperar...`);
+                    await Recovery.tentarRecuperar();
+                });
+                loopPrincipal();
+            }
+        }
+
+        if (msg.acao === 'ligar') {
+            iniciarRobo('popup (ligar)');
+            atualizarStatus('🟢 Robô Ligado', '#00ff44');
+        } else if (msg.acao === 'desligar') {
+            estadoRobo = 'PARADO';
+            atualizarStatus('🔴 Robô Desligado', '#ff3333');
+            Watchdog.parar();
+            AI.atualizarIndicador(false);
+            Logger.info('Robô desligado via popup');
+        } else if (msg.acao === 'iniciar') {
+            iniciarRobo('popup (iniciar)');
+        } else if (msg.acao === 'pausar') {
+            estadoRobo = 'PAUSADO';
+            atualizarStatus('⏸️ Pausado', '#ffaa00');
+            Logger.info('Fluxo pausado via popup');
+        } else if (msg.acao === 'parar') {
+            estadoRobo = 'PARADO';
+            atualizarStatus('⏹️ Parado', '#ff3333');
+            Watchdog.parar();
+            AI.atualizarIndicador(false);
+            Logger.info('Fluxo parado via popup');
+        }
+    });
 })();
