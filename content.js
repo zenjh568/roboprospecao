@@ -132,7 +132,7 @@
             panel.style.right = 'auto'; panel.style.bottom = 'auto'; panel.style.left = panelLeft + 'px'; panel.style.top = panelTop + 'px';
         }
     });
-    document.addEventListener('mousemove', (e) => { if (isDragging) { const p = document.getElementById('v-leads-panel'); p.style.left = (panelLeft + e.clientX - dragX) + 'px'; p.style.top = (panelTop + e.clientY - dragY) + 'px'; } });
+    document.addEventListener('mousemove', (e) => { if (isDragging) { const p = document.getElementById('v-leads-panel'); p.style.left = Math.min(window.innerWidth - p.offsetWidth, Math.max(0, panelLeft + e.clientX - dragX)) + 'px'; p.style.top = Math.min(window.innerHeight - p.offsetHeight, Math.max(0, panelTop + e.clientY - dragY)) + 'px'; } });
     document.addEventListener('mouseup', () => { isDragging = false; });
 
     document.addEventListener('click', (e) => {
@@ -336,8 +336,14 @@
                     AI.atualizarIndicador(false);
                     return;
                 }
-                abas = Array.from(document.querySelectorAll('.q-tab, [role="tab"]'));
-                abaAlvo = abas.find(aba => aba.querySelector('.fa-times, .fas.fa-times') && !aba.hasAttribute('data-v-done'));
+                // Aguarda o botão de fechar (fa-times) da nova aba renderizar no DOM
+                const inicioEsperaAba = Date.now();
+                while (Date.now() - inicioEsperaAba < 6000) {
+                    abas = Array.from(document.querySelectorAll('.q-tab, [role="tab"]'));
+                    abaAlvo = abas.find(aba => aba.querySelector('.fa-times, .fas.fa-times') && !aba.hasAttribute('data-v-done'));
+                    if (abaAlvo) break;
+                    await new Promise(r => setTimeout(r, 500));
+                }
                 if (!abaAlvo) {
                     atualizarStatus("✅ Todas as abas concluídas!", "#ff99cc");
                     Logger.success('Todas as abas foram concluídas!');
