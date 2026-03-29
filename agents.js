@@ -1,5 +1,5 @@
 /**
- * Sistema de Agentes Inteligentes - Prospecção Maratona
+ * Sistema de Agentes Inteligentes - Prospecção Robô
  * * Agentes:
  * 1. Watchdog   - Detecta travamentos e passos congelados
  * 2. Retry      - Reexecuta passos com backoff exponencial
@@ -173,6 +173,29 @@ const AgentesInteligentes = (() => {
             overlays.forEach(o => { if (o.parentElement) o.parentElement.removeChild(o); });
             return overlays.length > 0;
         }
+        async function tentarCancelarEFechar() {
+            Logger.agent('Recovery: Procurando botão Cancelar ou Fechar para liberar o fluxo...');
+            const textosAlvo = ['CANCELAR', 'CANCEL', 'FECHAR', 'CLOSE', 'NÃO', 'NAO'];
+            const botoes = Array.from(document.querySelectorAll('button'));
+            let clicou = false;
+            for (const btn of botoes) {
+                const txt = (btn.innerText || btn.textContent || '').trim().toUpperCase();
+                if (textosAlvo.includes(txt) && btn.offsetParent !== null) {
+                    Logger.agent(`Recovery: Clicando em "${btn.innerText.trim()}"...`);
+                    btn.click();
+                    clicou = true;
+                    await new Promise(r => setTimeout(r, 600));
+                    break;
+                }
+            }
+            if (!clicou) {
+                await fecharModais();
+            }
+            await fecharMenus();
+            Stats.registrarRecovery();
+            Logger.success('Recovery: Limpeza concluída. Pronto para reiniciar.');
+            return clicou;
+        }
         async function tentarRecuperar() {
             Logger.agent('Analisando estado travado...');
             const analise = Analyzer.detectarTravamento();
@@ -190,7 +213,7 @@ const AgentesInteligentes = (() => {
             else { Logger.error('Não foi possível recuperar automaticamente.'); }
             return recuperou;
         }
-        return { fecharModais, fecharMenus, removerOverlays, tentarRecuperar };
+        return { fecharModais, fecharMenus, removerOverlays, tentarCancelarEFechar, tentarRecuperar };
     })();
 
     // ==================== WATCHDOG ====================

@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Prospecção Maratona",
+  "name": "Prospecção Robô",
   "version": "60.0.0",
   "permissions": ["storage"],
   "host_permissions": ["https://app.duleads.com.br/*"],
