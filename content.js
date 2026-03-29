@@ -264,6 +264,51 @@
         return "";
     }
 
+    async function abrirLeadDaLista() {
+        Logger.info('Buscando próximo lead na lista vertical...');
+        atualizarStatus("📋 Buscando lead na lista...", "#00ffcc");
+        Watchdog.alimentar('abrir_lead_lista');
+
+        const candidatos = Array.from(document.querySelectorAll(
+            '.q-virtual-scroll__content .q-item, ' +
+            '.q-scroll-area .q-item, ' +
+            '.q-list > .q-item'
+        )).filter(el => {
+            if (el.hasAttribute('data-v-lista-done')) return false;
+            if (el.offsetParent === null) return false;
+            return el.querySelector('.q-avatar, [class*="avatar"]') ||
+                   el.querySelector('.text-weight-bold, strong');
+        });
+
+        if (candidatos.length === 0) {
+            Logger.warn('Nenhum lead encontrado na lista vertical.');
+            return false;
+        }
+
+        const leadItem = candidatos[0];
+        const abasAntes = document.querySelectorAll('.q-tab, [role="tab"]').length;
+        const nomeExtraido = (leadItem.innerText || '').trim().split('\n')[0];
+        Logger.info(`Abrindo lead da lista: "${nomeExtraido}"`);
+
+        leadItem.setAttribute('data-v-lista-done', 'true');
+        simularClique(leadItem);
+
+        const inicio = Date.now();
+        while (Date.now() - inicio < 7000) {
+            if (estadoRobo === 'PARADO') throw new Error('STOP');
+            const abasAgora = document.querySelectorAll('.q-tab, [role="tab"]').length;
+            if (abasAgora > abasAntes) {
+                Logger.success(`Lead "${nomeExtraido}" aberto na aba!`);
+                await safeWait(2000);
+                return true;
+            }
+            await new Promise(r => setTimeout(r, 300));
+        }
+
+        Logger.warn(`Lead "${nomeExtraido}" não abriu em aba (timeout).`);
+        return false;
+    }
+
     async function executarFluxoZap() {
         try {
             // Verificação de página válida pelo Analyzer
@@ -278,16 +323,29 @@
             atualizarStatus("🔍 Lendo Abas Abertas...", "#00ffcc");
             Logger.info('Iniciando fluxo para próximo cliente...');
 
-            const abas = Array.from(document.querySelectorAll('.q-tab, [role="tab"]'));
-            const abaAlvo = abas.find(aba => aba.querySelector('.fa-times, .fas.fa-times') && !aba.hasAttribute('data-v-done'));
-            
+            let abas = Array.from(document.querySelectorAll('.q-tab, [role="tab"]'));
+            let abaAlvo = abas.find(aba => aba.querySelector('.fa-times, .fas.fa-times') && !aba.hasAttribute('data-v-done'));
+
             if (!abaAlvo) {
-                atualizarStatus("✅ Todas as abas concluídas!", "#ff99cc");
-                Logger.success('Todas as abas foram concluídas!');
-                estadoRobo = 'PARADO';
-                Watchdog.parar();
-                AI.atualizarIndicador(false);
-                return;
+                const abriu = await abrirLeadDaLista();
+                if (!abriu) {
+                    atualizarStatus("✅ Todos os leads concluídos!", "#ff99cc");
+                    Logger.success('Todos os leads da lista foram concluídos!');
+                    estadoRobo = 'PARADO';
+                    Watchdog.parar();
+                    AI.atualizarIndicador(false);
+                    return;
+                }
+                abas = Array.from(document.querySelectorAll('.q-tab, [role="tab"]'));
+                abaAlvo = abas.find(aba => aba.querySelector('.fa-times, .fas.fa-times') && !aba.hasAttribute('data-v-done'));
+                if (!abaAlvo) {
+                    atualizarStatus("✅ Todas as abas concluídas!", "#ff99cc");
+                    Logger.success('Todas as abas foram concluídas!');
+                    estadoRobo = 'PARADO';
+                    Watchdog.parar();
+                    AI.atualizarIndicador(false);
+                    return;
+                }
             }
 
             simularClique(abaAlvo);
