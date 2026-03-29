@@ -698,8 +698,15 @@
                 Logger.agent('Tentando recuperação automática após erro...');
                 const recuperou = await Recovery.tentarRecuperar();
                 if (recuperou) {
-                    Logger.success('Recuperação bem-sucedida. Continuando fluxo...');
-                    return; // Permite que o loop continue
+                    Logger.success('Recuperação bem-sucedida. Pulando cliente com erro e continuando...');
+                    // Marca a aba como processada com erro para não travar no mesmo cliente
+                    const abas = Array.from(document.querySelectorAll('.q-tab, [role="tab"]'));
+                    const abaAtual = abas.find(aba => aba.querySelector('.fa-times, .fas.fa-times') && !aba.hasAttribute('data-v-done'));
+                    if (abaAtual) {
+                        abaAtual.setAttribute('data-v-done', 'true');
+                        abaAtual.style.borderBottom = "4px solid #ff3333";
+                    }
+                    return; // Permite que o loop continue para o próximo cliente
                 }
             }
             estadoRobo = 'PARADO';

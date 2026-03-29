@@ -250,7 +250,7 @@ const AgentesInteligentes = (() => {
             }
             // Tenta pressionar ESC como fallback
             if (!fechou && modais.length > 0) {
-                document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', keyCode: 27, bubbles: true }));
+                document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
                 await new Promise(r => setTimeout(r, 500));
             }
             return fechou || modais.length > 0;
@@ -263,7 +263,7 @@ const AgentesInteligentes = (() => {
             const menus = document.querySelectorAll('.q-menu');
             let fechou = false;
             for (const menu of menus) {
-                document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', keyCode: 27, bubbles: true }));
+                document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
                 fechou = true;
                 await new Promise(r => setTimeout(r, 300));
             }
