@@ -289,9 +289,9 @@
             for (let i = 0; i < elementosTexto.length; i++) {
                 const txt = (elementosTexto[i].innerText || '').trim();
                 if (txt === 'Nome' || txt === 'NOME:') {
-                    // Pega o elemento vizinho, que é onde o nome real fica
-                    let proximo = elementosTexto[i].nextElementSibling || elementosTexto[i+1];
-                    if (proximo && proximo.innerText) {
+                    // Pega o elemento vizinho (nextElementSibling é mais confiável do que o próximo da lista flat)
+                    let proximo = elementosTexto[i].nextElementSibling;
+                    if (proximo && proximo.innerText && proximo.innerText.trim() !== txt) {
                         // Corta pelo primeiro espaço, pegando SÓ o primeiro nome
                         nome = proximo.innerText.trim().split(/\s+/)[0]; 
                         break;
@@ -302,7 +302,8 @@
             // 2. Fallback caso a grid demore a carregar, pega o nome no elemento clicado (lista ou aba)
             if (!nome || nome.length < 2) {
                 if (abaAlvo && abaAlvo.innerText) {
-                    nome = abaAlvo.innerText.replace(/×|x/gi, '').trim().split(/[\/\s\n-]/)[0];
+                    // Remove apenas o símbolo × (botão fechar), nunca a letra x de nomes como Alexandre, Alex, Felix...
+                    nome = abaAlvo.innerText.replace(/×/g, '').trim().split(/\s+/)[0];
                 }
             }
         } catch(e) {}
