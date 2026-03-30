@@ -3,53 +3,171 @@
 <head>
   <meta charset="UTF-8">
   <style>
-    body { width: 300px; padding: 15px; background: #000; color: #fff; font-family: 'Segoe UI', sans-serif; border: 2px solid #ff6600; margin: 0; }
-    .header { background: linear-gradient(135deg, #000, #ff6600, #00cc44); padding: 15px; text-align: center; margin: -15px -15px 15px -15px; }
-    h2 { font-size: 14px; text-transform: uppercase; letter-spacing: 2px; margin: 0; }
-    
-    .btn { width: 100%; border: none; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer; text-transform: uppercase; transition: 0.3s; color: white; margin-bottom: 8px; font-size: 12px; }
-    .btn:hover { transform: scale(1.02); }
-    
-    .btn-iniciar { background: #00cc44; color: #000; box-shadow: 0 4px 10px rgba(0,204,68,0.4); }
-    .btn-iniciar:hover { background: #00ff44; }
-    
+    * { box-sizing: border-box; }
+    body {
+      width: 310px;
+      padding: 0;
+      background: #0d1117;
+      color: #e2e8f0;
+      font-family: 'Segoe UI', sans-serif;
+      border: 2px solid #4f46e5;
+      border-radius: 10px;
+      margin: 0;
+      overflow: hidden;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #1a1f3c 0%, #4f46e5 55%, #06b6d4 100%);
+      padding: 14px 15px 12px;
+      text-align: center;
+      position: relative;
+    }
+    .header::after {
+      content: '';
+      display: block;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #06b6d4, #4f46e5, transparent);
+      margin-top: 10px;
+    }
+
+    .robot-avatar {
+      font-size: 36px;
+      line-height: 1;
+      display: block;
+      filter: drop-shadow(0 0 8px rgba(6,182,212,0.8));
+      animation: pulse-glow 2.5s ease-in-out infinite;
+    }
+    @keyframes pulse-glow {
+      0%, 100% { filter: drop-shadow(0 0 6px rgba(6,182,212,0.6)); }
+      50%       { filter: drop-shadow(0 0 14px rgba(79,70,229,1)); }
+    }
+
+    h2 {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      margin: 6px 0 0;
+      color: #e2e8f0;
+      text-shadow: 0 0 10px rgba(6,182,212,0.7);
+    }
+
+    .content { padding: 14px 15px 12px; }
+
+    .btn {
+      width: 100%;
+      border: none;
+      padding: 11px;
+      border-radius: 7px;
+      font-weight: bold;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: all 0.25s;
+      color: white;
+      margin-bottom: 8px;
+      font-size: 12px;
+      letter-spacing: 0.5px;
+    }
+    .btn:hover { transform: scale(1.02); filter: brightness(1.15); }
+    .btn:active { transform: scale(0.98); }
+
+    .btn-iniciar {
+      background: linear-gradient(135deg, #059669, #10b981);
+      box-shadow: 0 4px 12px rgba(16,185,129,0.4);
+    }
+
     .btn-row { display: flex; gap: 8px; }
-    .btn-pausar { background: #ffaa00; color: #000; box-shadow: 0 4px 10px rgba(255,170,0,0.3); }
-    .btn-pausar:hover { background: #ffcc00; }
-    
-    .btn-parar { background: #cc0000; box-shadow: 0 4px 10px rgba(204,0,0,0.4); }
-    .btn-parar:hover { background: #ff0000; }
-    
-    .btn-toggle { display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 13px; }
-    .btn-toggle-on  { background: #ff6600; box-shadow: 0 4px 10px rgba(255,102,0,0.5); }
-    .btn-toggle-on:hover  { background: #ff8800; }
-    .btn-toggle-off { background: #444; box-shadow: 0 4px 10px rgba(100,100,100,0.3); }
-    .btn-toggle-off:hover { background: #555; }
-    .led { width: 14px; height: 14px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
-    .led-green { background: #00ff44; box-shadow: 0 0 8px #00ff44; }
-    .led-gray  { background: #666; box-shadow: none; }
-    .status { font-size: 11px; text-align: center; margin-top: 10px; color: #00cc44; font-weight: bold; padding: 8px; background: #111; border-radius: 5px; border: 1px solid #333; }
-    .agent-info { font-size: 9px; text-align: center; margin-top: 6px; color: #ff6600; padding: 6px; background: #111; border-radius: 5px; border: 1px solid #ff6600; }
+    .btn-row .btn { flex: 1; }
+
+    .btn-pausar {
+      background: linear-gradient(135deg, #d97706, #f59e0b);
+      color: #1a1200;
+      box-shadow: 0 4px 12px rgba(245,158,11,0.35);
+    }
+
+    .btn-parar {
+      background: linear-gradient(135deg, #b91c1c, #ef4444);
+      box-shadow: 0 4px 12px rgba(239,68,68,0.4);
+    }
+
+    .btn-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      font-size: 13px;
+      border: 1px solid transparent;
+    }
+    .btn-toggle-on {
+      background: linear-gradient(135deg, #3730a3, #4f46e5);
+      box-shadow: 0 4px 14px rgba(79,70,229,0.55);
+      border-color: #818cf8;
+    }
+    .btn-toggle-off {
+      background: #1e293b;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+      border-color: #334155;
+    }
+
+    .led { width: 13px; height: 13px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+    .led-green { background: #34d399; box-shadow: 0 0 8px #34d399, 0 0 14px #059669; }
+    .led-gray  { background: #475569; box-shadow: none; }
+
+    .status {
+      font-size: 11px;
+      text-align: center;
+      margin-top: 10px;
+      color: #34d399;
+      font-weight: bold;
+      padding: 8px 10px;
+      background: #0f172a;
+      border-radius: 6px;
+      border: 1px solid #1e3a5f;
+    }
+
+    .agent-info {
+      font-size: 9px;
+      text-align: center;
+      margin-top: 6px;
+      color: #06b6d4;
+      padding: 6px 8px;
+      background: #0f172a;
+      border-radius: 6px;
+      border: 1px solid #1e3a8a;
+      letter-spacing: 0.3px;
+    }
+
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #4f46e5, transparent);
+      margin: 10px 0;
+    }
   </style>
 </head>
 <body>
-  <div class="header"><h2>PROSPECÇÃO 🤖</h2></div>
-  
-  <button id="btnToggle" class="btn btn-toggle btn-toggle-off">
-    <span class="led led-gray" id="ledIndicator"></span>
-    <span id="toggleLabel">LIGAR ROBÔ</span>
-  </button>
-
-  <button id="btnIniciar" class="btn btn-iniciar">▶️ INICIAR / CONTINUAR</button>
-  
-  <div class="btn-row">
-    <button id="btnPausar" class="btn btn-pausar">⏸️ PAUSAR</button>
-    <button id="btnParar" class="btn btn-parar">⏹️ PARAR</button>
+  <div class="header">
+    <span class="robot-avatar">🤖</span>
+    <h2>Robô de Prospecção</h2>
   </div>
 
-  <div class="status" id="statusMsg">Aguardando comando...</div>
-  <div class="agent-info">🤖 Agentes: Watchdog · Retry · Recovery · Analyzer</div>
-  
+  <div class="content">
+    <button id="btnToggle" class="btn btn-toggle btn-toggle-off">
+      <span class="led led-gray" id="ledIndicator"></span>
+      <span id="toggleLabel">LIGAR ROBÔ</span>
+    </button>
+
+    <div class="divider"></div>
+
+    <button id="btnIniciar" class="btn btn-iniciar">▶️ INICIAR / CONTINUAR</button>
+
+    <div class="btn-row">
+      <button id="btnPausar" class="btn btn-pausar">⏸️ PAUSAR</button>
+      <button id="btnParar" class="btn btn-parar">⏹️ PARAR</button>
+    </div>
+
+    <div class="status" id="statusMsg">Aguardando comando...</div>
+    <div class="agent-info">⚡ Agentes: Watchdog · Retry · Recovery · Analyzer</div>
+  </div>
+
   <script src="popup.js"></script>
 </body>
 </html>
